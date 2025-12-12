@@ -1,0 +1,601 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>晴れる屋店舗検索 | URLジェネレーター</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #0f172a;
+      --panel: rgba(15, 23, 42, 0.9);
+      --text: #e5e7eb;
+      --accent: #38bdf8;
+      --muted: #9ca3af;
+      --border: #1f2937;
+      --mono: "SFMono-Regular", Consolas, "Roboto Mono", monospace;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Inter", "Noto Sans JP", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, #1d2a4d, transparent 30%),
+                  radial-gradient(circle at 80% 10%, #0ea5e9, transparent 22%),
+                  radial-gradient(circle at 50% 80%, #0ea5e933, transparent 28%),
+                  #0b1120;
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    header h1 {
+      margin: 0 0 8px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
+    }
+    .lede {
+      color: var(--muted);
+      margin: 0 0 16px;
+      line-height: 1.6;
+    }
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
+      backdrop-filter: blur(6px);
+    }
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      color: var(--text);
+      font-size: 15px;
+    }
+    input[type="text"]:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+    .buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    button {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      background: #0b1220;
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+    button.primary {
+      background: linear-gradient(120deg, #38bdf8, #22d3ee);
+      color: #0b1220;
+      border: none;
+    }
+    button:hover { transform: translateY(-1px); border-color: var(--accent); }
+    .output {
+      min-height: 260px;
+      background: #0b1220;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 12px;
+      overflow: auto;
+      font-family: var(--mono);
+      font-size: 13px;
+      line-height: 1.5;
+      white-space: pre;
+    }
+    iframe.preview {
+      width: 100%;
+      border: 1px dashed var(--border);
+      border-radius: 12px;
+      min-height: 260px;
+      background: #0c1424;
+    }
+    .muted { color: var(--muted); font-size: 13px; line-height: 1.6; }
+    .store-selection {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #0b1220;
+      border-radius: 8px;
+    }
+    .store-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .store-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .store-item label {
+      cursor: pointer;
+      font-weight: 400;
+      margin: 0;
+      font-size: 14px;
+      user-select: none;
+    }
+    .store-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .store-buttons button {
+      font-size: 13px;
+      padding: 6px 10px;
+    }
+    .options-section {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .option-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .option-group label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+    select {
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #0b1220;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+    }
+    select:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+    .checkbox-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .checkbox-option input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+    .checkbox-option label {
+      cursor: pointer;
+      font-weight: 400;
+      margin: 0;
+      font-size: 14px;
+      user-select: none;
+    }
+    @media (max-width: 640px) {
+      .grid { grid-template-columns: 1fr; }
+      .output, iframe.preview { min-height: 200px; }
+      .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .options-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>晴れる屋店舗検索 URL ジェネレーター</h1>
+      <p class="lede">
+        カード名（日本語・英語）を入力すると、晴れる屋オンライン検索の
+        URL を生成します。リンクをそのまま共有・埋め込みできます。
+      </p>
+    </header>
+
+    <div class="grid">
+      <section class="card">
+        <label for="cardName">検索ワード（カード名）</label>
+        <input id="cardName" type="text" placeholder="例: 稲妻 / Lightning Bolt" autocomplete="off" />
+        
+        <div class="store-selection">
+          <label>店舗を選択</label>
+          <div class="store-buttons">
+            <button id="selectAllBtn">全て選択</button>
+            <button id="deselectAllBtn">全て解除</button>
+          </div>
+          <div class="store-grid" id="storeGrid"></div>
+        </div>
+
+        <div class="options-section">
+          <label>検索オプション</label>
+          <div class="options-grid">
+            <div class="option-group">
+              <label for="stockOption">在庫</label>
+              <select id="stockOption">
+                <option value="">指定なし</option>
+                <option value="1">在庫あり</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label for="languageOption">言語</label>
+              <select id="languageOption">
+                <option value="">指定なし</option>
+                <option value="1">日本語</option>
+                <option value="2">英語</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label>foil</label>
+              <div class="checkbox-option">
+                <input type="checkbox" id="foilOption" />
+                <label for="foilOption">foil</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="primary" id="generateBtn">URLを作る</button>
+          <button id="sampleBtn">サンプル入力</button>
+          <button id="clearBtn">リセット</button>
+          <button id="copyBtn">URLをコピー</button>
+        </div>
+        <p class="muted">
+          - 晴れる屋オンラインの検索パラメータにカード名を付与したURLを生成します。<br>
+          - 選択した店舗ごとのURLが生成されます。<br>
+          - 在庫、言語、foil のオプションを指定できます。<br>
+          - URLをそのまま共有したり、ボタンやリンクに設定できます。
+        </p>
+      </section>
+
+      <section class="card">
+        <h2 style="margin-top:0">生成されたURL</h2>
+        <div id="htmlOutput" class="output" aria-live="polite"><!-- ここに生成結果が入ります --></div>
+        <div class="buttons" style="margin-top:12px;">
+          <button id="copyResultBtn">URL一覧をコピー</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin-top:0">プレビュー</h2>
+      <iframe id="preview" class="preview" title="生成HTMLプレビュー"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const cardNameInput = document.getElementById("cardName");
+    const htmlOutput = document.getElementById("htmlOutput");
+    const preview = document.getElementById("preview");
+    const generateBtn = document.getElementById("generateBtn");
+    const sampleBtn = document.getElementById("sampleBtn");
+    const restoreBtn = document.getElementById("restoreBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const copyResultBtn = document.getElementById("copyResultBtn");
+    const storeGrid = document.getElementById("storeGrid");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const deselectAllBtn = document.getElementById("deselectAllBtn");
+
+    const COOKIE_NAME = "hareruyaSearchState";
+
+    const stores = [
+      "TC東京", "秋葉原", "渋谷", "吉祥寺", "千葉", "成田", "大宮", "川崎",
+      "横浜", "町田", "札幌", "仙台", "郡山", "高崎", "宇都宮", "水戸",
+      "新潟", "金沢", "甲府", "静岡", "名古屋", "TC大阪", "日本橋", "三宮",
+      "広島", "高松", "福岡"
+    ];
+
+    // 店舗の英語スラッグ
+    const storeSlugs = {
+      "秋葉原": "akihabara",
+      "渋谷": "shibuya",
+      "吉祥寺": "kichijoji",
+      "千葉": "chiba",
+      "成田": "narita",
+      "大宮": "omiya",
+      "川崎": "kawasaki",
+      "横浜": "yokohama",
+      "町田": "machida",
+      "札幌": "sapporo",
+      "仙台": "koriyama",
+      "郡山": "koriyama",
+      "高崎": "takasaki",
+      "宇都宮": "utsunomiya",
+      "水戸": "mito",
+      "新潟": "niigata",
+      "金沢": "kanazawa",
+      "甲府": "kofu",
+      "静岡": "shizuoka",
+      "名古屋": "nagoya",
+      "TC大阪": "osaka",
+      "日本橋": "nipponbashi",
+      "三宮": "sannomiya",
+      "広島": "hiroshima",
+      "高松": "takamatsu",
+      "福岡": "fukuoka"
+    };
+
+    // 店舗チェックボックスを生成
+    stores.forEach(store => {
+      const item = document.createElement("div");
+      item.className = "store-item";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `store-${store}`;
+      checkbox.value = store;
+      const label = document.createElement("label");
+      label.htmlFor = `store-${store}`;
+      label.textContent = store;
+      item.appendChild(checkbox);
+      item.appendChild(label);
+      storeGrid.appendChild(item);
+    });
+
+    const setCookie = (name, value, days = 3) => {
+      const expires = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toUTCString();
+      document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/`;
+    };
+
+    const getCookie = (name) => {
+      const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+      return match ? decodeURIComponent(match[1]) : null;
+    };
+
+    const deleteCookie = (name) => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    };
+
+    const escapeHtml = (text) =>
+      text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+
+    const buildUrl = (cardName, store = null) => {
+      const query = encodeURIComponent(cardName);
+      const params = [`product=${query}`];
+      
+      // 在庫オプション
+      const stockOption = document.getElementById("stockOption").value;
+      if (stockOption !== "") {
+        params.push(`stock=${stockOption}`);
+      }
+      
+      // 言語オプション（日本語=1, 英語=2）
+      const languageOption = document.getElementById("languageOption").value;
+      if (languageOption !== "") {
+        params.push(`language%5B%5D=${languageOption}`);
+      }
+      
+      // フォイルオプション
+      const foilOption = document.getElementById("foilOption").checked;
+      if (foilOption) {
+        params.push(`foilFlg%5B%5D=1`);
+      }
+      
+      const queryString = params.join("&");
+      
+      if (!store || store === "TC東京") {
+        // 本店は従来の検索URL
+        return `https://www.hareruyamtg.com/ja/products/search?${queryString}`;
+      }
+      const slug = storeSlugs[store];
+      if (!slug) {
+        return `https://www.hareruyamtg.com/ja/products/search?${queryString}`;
+      }
+      return `https://shops.hareruyamtg.com/${slug}/products/search/result/?${queryString}`;
+    };
+
+    const getSelectedStores = () => {
+      return stores.filter(store => {
+        const checkbox = document.getElementById(`store-${store}`);
+        return checkbox.checked;
+      });
+    };
+
+    const render = () => {
+      const cardName = cardNameInput.value.trim();
+      if (!cardName) {
+        htmlOutput.textContent = "カード名を入力してください。";
+        preview.srcdoc = "";
+        return;
+      }
+      
+      const selectedStores = getSelectedStores();
+      
+      if (selectedStores.length === 0) {
+        htmlOutput.textContent = "少なくとも1つの店舗を選択してください。";
+        preview.srcdoc = "";
+        return;
+      }
+
+      const urls = selectedStores.map(store => ({
+        store,
+        url: buildUrl(cardName, store)
+      }));
+
+      const urlText = urls.map(item => `${item.url}`).join("\n");
+      htmlOutput.textContent = urlText;
+
+      const previewHtml = `<main style="font-family:sans-serif;padding:16px;background:#0b1120;color:#e5e7eb;">
+  <p style="margin:0 0 12px;font-weight:700;">生成されたURL (${urls.length}件):</p>
+  ${urls.map(item => `
+    <div style="margin-bottom:16px;padding:12px;background:#111827;border-radius:8px;border:1px solid #1f2937;">
+      <p style="margin:0 0 6px;font-weight:600;color:#38bdf8;">${escapeHtml(item.store)}</p>
+      <a style="color:#38bdf8;word-break:break-all;text-decoration:none;" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a>
+    </div>
+  `).join("")}
+</main>`;
+      preview.srcdoc = previewHtml;
+
+      // 入力内容をCookieに保存（3日）
+      const state = {
+        cardName,
+        stores: selectedStores,
+        stock: document.getElementById("stockOption").value,
+        language: document.getElementById("languageOption").value,
+        foil: document.getElementById("foilOption").checked
+      };
+      try {
+        setCookie(COOKIE_NAME, JSON.stringify(state), 3);
+      } catch (_) {
+        // noop
+      }
+    };
+
+    selectAllBtn.addEventListener("click", () => {
+      stores.forEach(store => {
+        document.getElementById(`store-${store}`).checked = true;
+      });
+    });
+
+    deselectAllBtn.addEventListener("click", () => {
+      stores.forEach(store => {
+        document.getElementById(`store-${store}`).checked = false;
+      });
+    });
+
+    generateBtn.addEventListener("click", render);
+    cardNameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        render();
+      }
+    });
+
+    sampleBtn.addEventListener("click", () => {
+      cardNameInput.value = "オーリオックのチャンピオン / Auriok Champion";
+      render();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      cardNameInput.value = "";
+      stores.forEach(store => {
+        document.getElementById(`store-${store}`).checked = false;
+      });
+      document.getElementById("stockOption").value = "";
+      document.getElementById("languageOption").value = "";
+      document.getElementById("foilOption").checked = false;
+      htmlOutput.textContent = "<!-- ここに生成結果が入ります -->";
+      preview.srcdoc = "";
+      deleteCookie(COOKIE_NAME);
+      cardNameInput.focus();
+    });
+
+    const copyToClipboard = async (text, button, label = "コピーしました", reset = "URLをコピー") => {
+      if (!text.trim()) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        if (button) {
+          const original = button.textContent;
+          button.textContent = label;
+          setTimeout(() => (button.textContent = reset || original), 1200);
+        }
+      } catch (err) {
+        if (button) {
+          const original = button.textContent;
+          button.textContent = "コピーできませんでした";
+          setTimeout(() => (button.textContent = reset || original), 1200);
+        }
+      }
+    };
+
+    copyBtn.addEventListener("click", async () => {
+      await copyToClipboard(cardNameInput.value.trim(), copyBtn, "コピーしました", "カード名をコピー");
+    });
+
+    copyResultBtn.addEventListener("click", async () => {
+      await copyToClipboard(htmlOutput.textContent, copyResultBtn, "コピーしました", "URL一覧をコピー");
+    });
+
+    // Cookie から前回の入力を復元
+    const restoreFromCookie = (withFeedback = false) => {
+      const raw = getCookie(COOKIE_NAME);
+      if (!raw) {
+        if (withFeedback) {
+          const original = restoreBtn.textContent;
+          restoreBtn.textContent = "保存された情報がありません";
+          setTimeout(() => (restoreBtn.textContent = original), 1200);
+        }
+        return false;
+      }
+      try {
+        const state = JSON.parse(raw);
+        if (state.cardName) cardNameInput.value = state.cardName;
+        if (Array.isArray(state.stores)) {
+          state.stores.forEach((s) => {
+            const cb = document.getElementById(`store-${s}`);
+            if (cb) cb.checked = true;
+          });
+        }
+        if (typeof state.stock === "string") {
+          document.getElementById("stockOption").value = state.stock;
+        }
+        if (typeof state.language === "string") {
+          document.getElementById("languageOption").value = state.language;
+        }
+        if (typeof state.foil === "boolean") {
+          document.getElementById("foilOption").checked = state.foil;
+        }
+        if (withFeedback) {
+          const original = restoreBtn.textContent;
+          restoreBtn.textContent = "復元しました";
+          setTimeout(() => (restoreBtn.textContent = original), 1200);
+        }
+        return true;
+      } catch (_) {
+        // JSON parse failure -> ignore
+        return false;
+      }
+    };
+
+    const restoredOnLoad = restoreFromCookie();
+    if (restoredOnLoad) {
+      // 入力を自動復元した場合、その内容で表示を更新
+      render();
+    }
+
+    restoreBtn.addEventListener("click", () => restoreFromCookie(true));
+  </script>
+</body>
+</html>
+
