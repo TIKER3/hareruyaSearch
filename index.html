@@ -245,3 +245,296 @@
           </div>
           <div class="store-grid" id="storeGrid"></div>
         </div>
+
+        <div class="options-section">
+          <label>検索オプション</label>
+          <div class="options-grid">
+            <div class="option-group">
+              <label for="stockOption">在庫</label>
+              <select id="stockOption">
+                <option value="">指定なし</option>
+                <option value="1">在庫あり</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label for="languageOption">言語</label>
+              <select id="languageOption">
+                <option value="">指定なし</option>
+                <option value="1">日本語</option>
+                <option value="2">英語</option>
+              </select>
+            </div>
+            <div class="option-group">
+              <label>foil</label>
+              <div class="checkbox-option">
+                <input type="checkbox" id="foilOption" />
+                <label for="foilOption">foil</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="buttons">
+          <button class="primary" id="generateBtn">URLを作る</button>
+          <button id="sampleBtn">サンプル入力</button>
+          <button id="clearBtn">リセット</button>
+          <button id="copyBtn">URLをコピー</button>
+        </div>
+        <p class="muted">
+          - 晴れる屋オンラインの検索パラメータにカード名を付与したURLを生成します。<br>
+          - 選択した店舗ごとのURLが生成されます。<br>
+          - 在庫、言語、foil のオプションを指定できます。<br>
+          - URLをそのまま共有したり、ボタンやリンクに設定できます。
+        </p>
+      </section>
+
+      <section class="card">
+        <h2 style="margin-top:0">生成されたURL</h2>
+        <div id="htmlOutput" class="output" aria-live="polite"></div>
+        <div class="buttons" style="margin-top:12px;">
+          <button id="copyResultBtn">URL一覧をコピー</button>
+        </div>
+      </section>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h2 style="margin-top:0">プレビュー</h2>
+      <iframe id="preview" class="preview" title="生成HTMLプレビュー"></iframe>
+    </div>
+  </div>
+
+  <script>
+    const cardNameInput = document.getElementById("cardName");
+    const htmlOutput = document.getElementById("htmlOutput");
+    const preview = document.getElementById("preview");
+    const generateBtn = document.getElementById("generateBtn");
+    const sampleBtn = document.getElementById("sampleBtn");
+    const clearBtn = document.getElementById("clearBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const copyResultBtn = document.getElementById("copyResultBtn");
+    const storeGrid = document.getElementById("storeGrid");
+    const selectAllBtn = document.getElementById("selectAllBtn");
+    const deselectAllBtn = document.getElementById("deselectAllBtn");
+
+    // 保存にはlocalStorageを使用
+    const STORAGE_KEY = "hareruyaSearchState_v3";
+
+    const stores = [
+      "TC東京", "秋葉原", "渋谷", "吉祥寺", "千葉", "成田", "大宮", "川崎",
+      "横浜", "町田", "札幌", "仙台", "郡山", "高崎", "宇都宮", "水戸",
+      "新潟", "金沢", "甲府", "静岡", "名古屋","大須", "TC大阪", "日本橋", "三宮",
+      "京都","広島", "高松", "福岡"
+    ];
+
+    const storeSlugs = {
+      "秋葉原": "akihabara",
+      "渋谷": "shibuya",
+      "吉祥寺": "kichijoji",
+      "千葉": "chiba",
+      "成田": "narita",
+      "大宮": "omiya",
+      "川崎": "kawasaki",
+      "横浜": "yokohama",
+      "町田": "machida",
+      "札幌": "sapporo",
+      "仙台": "koriyama",
+      "郡山": "koriyama",
+      "高崎": "takasaki",
+      "宇都宮": "utsunomiya",
+      "水戸": "mito",
+      "新潟": "niigata",
+      "金沢": "kanazawa",
+      "甲府": "kofu",
+      "静岡": "shizuoka",
+      "名古屋": "nagoya",
+      "大須": "osu",      
+      "TC大阪": "osaka",
+      "日本橋": "nipponbashi",
+      "三宮": "sannomiya",
+      "京都": "kyoto",
+      "広島": "hiroshima",
+      "高松": "takamatsu",
+      "福岡": "fukuoka"
+    };
+
+    stores.forEach(store => {
+      const item = document.createElement("div");
+      item.className = "store-item";
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.id = `store-${store}`;
+      checkbox.value = store;
+      const label = document.createElement("label");
+      label.htmlFor = `store-${store}`;
+      label.textContent = store;
+      item.appendChild(checkbox);
+      item.appendChild(label);
+      storeGrid.appendChild(item);
+    });
+
+    const saveState = (value) => {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(value)); } catch (e) {}
+    };
+
+    const loadState = () => {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { return null; }
+    };
+
+    const clearState = () => { localStorage.removeItem(STORAGE_KEY); };
+
+    const escapeHtml = (text) =>
+      text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+    const buildUrl = (cardName, store = null) => {
+      const query = encodeURIComponent(cardName);
+      const params = [`product=${query}`];
+      
+      const stockOption = document.getElementById("stockOption").value;
+      if (stockOption !== "") params.push(`stock=${stockOption}`);
+      
+      const languageOption = document.getElementById("languageOption").value;
+      if (languageOption !== "") params.push(`language%5B%5D=${languageOption}`);
+      
+      const foilOption = document.getElementById("foilOption").checked;
+      if (foilOption) params.push(`foilFlg%5B%5D=1`);
+      
+      const queryString = params.join("&");
+      
+      if (!store || store === "TC東京") return `https://www.hareruyamtg.com/ja/products/search?${queryString}`;
+      const slug = storeSlugs[store];
+      return slug ? `https://shops.hareruyamtg.com/${slug}/products/search/result/?${queryString}` : `https://www.hareruyamtg.com/ja/products/search?${queryString}`;
+    };
+
+    const getSelectedStores = () => {
+      return stores.filter(store => document.getElementById(`store-${store}`).checked);
+    };
+
+    const render = () => {
+      const cardName = cardNameInput.value.trim();
+      if (!cardName) {
+        htmlOutput.textContent = "カード名を入力してください。";
+        preview.srcdoc = "";
+        return;
+      }
+      
+      const selectedStores = getSelectedStores();
+      if (selectedStores.length === 0) {
+        htmlOutput.textContent = "少なくとも1つの店舗を選択してください。";
+        preview.srcdoc = "";
+        return;
+      }
+
+      const urls = selectedStores.map(store => ({ store, url: buildUrl(cardName, store) }));
+      const urlText = urls.map(item => `${item.url}`).join("\n");
+      htmlOutput.textContent = urlText;
+
+      // 修正: プレビュー内にもviewportメタタグを追加し、モバイル表示に対応
+      const previewHtml = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body { margin: 0; background: #0b1120; color: #e5e7eb; font-family: sans-serif; padding: 16px; }
+  a { color: #38bdf8; word-break: break-all; text-decoration: none; }
+  .item { margin-bottom: 16px; padding: 12px; background: #111827; border-radius: 8px; border: 1px solid #1f2937; }
+  .store { margin: 0 0 6px; font-weight: 600; color: #38bdf8; }
+</style>
+</head>
+<body>
+  <p style="margin:0 0 12px;font-weight:700;">生成されたURL (${urls.length}件):</p>
+  ${urls.map(item => `
+    <div class="item">
+      <p class="store">${escapeHtml(item.store)}</p>
+      <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a>
+    </div>
+  `).join("")}
+</body>
+</html>`;
+      preview.srcdoc = previewHtml;
+
+      const state = {
+        cardName,
+        stores: selectedStores,
+        stock: document.getElementById("stockOption").value,
+        language: document.getElementById("languageOption").value,
+        foil: document.getElementById("foilOption").checked
+      };
+      saveState(state);
+    };
+
+    selectAllBtn.addEventListener("click", () => {
+      stores.forEach(store => document.getElementById(`store-${store}`).checked = true);
+    });
+
+    deselectAllBtn.addEventListener("click", () => {
+      stores.forEach(store => document.getElementById(`store-${store}`).checked = false);
+    });
+
+    generateBtn.addEventListener("click", render);
+    cardNameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        render();
+      }
+    });
+
+    sampleBtn.addEventListener("click", () => {
+      cardNameInput.value = "オーリオックのチャンピオン / Auriok Champion";
+      render();
+    });
+
+    clearBtn.addEventListener("click", () => {
+      cardNameInput.value = "";
+      stores.forEach(store => document.getElementById(`store-${store}`).checked = false);
+      document.getElementById("stockOption").value = "";
+      document.getElementById("languageOption").value = "";
+      document.getElementById("foilOption").checked = false;
+      htmlOutput.textContent = "";
+      preview.srcdoc = "";
+      clearState();
+      cardNameInput.focus();
+    });
+
+    const copyToClipboard = async (text, button, label = "コピーしました", reset = "URLをコピー") => {
+      if (!text.trim()) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        if (button) {
+          const original = button.textContent;
+          button.textContent = label;
+          setTimeout(() => (button.textContent = reset || original), 1200);
+        }
+      } catch (err) {}
+    };
+
+    copyBtn.addEventListener("click", async () => {
+      await copyToClipboard(cardNameInput.value.trim(), copyBtn, "コピーしました", "カード名をコピー");
+    });
+
+    copyResultBtn.addEventListener("click", async () => {
+      await copyToClipboard(htmlOutput.textContent, copyResultBtn, "コピーしました", "URL一覧をコピー");
+    });
+
+    const restoreFromStorage = () => {
+      const state = loadState();
+      if (!state) return false;
+      if (state.cardName) cardNameInput.value = state.cardName;
+      if (Array.isArray(state.stores)) {
+        state.stores.forEach((s) => {
+          const cb = document.getElementById(`store-${s}`);
+          if (cb) cb.checked = true;
+        });
+      }
+      if (state.stock) document.getElementById("stockOption").value = state.stock;
+      if (state.language) document.getElementById("languageOption").value = state.language;
+      if (state.foil) document.getElementById("foilOption").checked = state.foil;
+      return true;
+    };
+
+    if (restoreFromStorage()) {
+      render();
+    }
+  </script>
+</body>
+</html>
