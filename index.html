@@ -44,7 +44,8 @@
     .grid {
       display: grid;
       gap: 16px;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      /* カラム設定をシンプルに（プレビューのみになったため） */
+      grid-template-columns: 1fr; 
     }
     .card {
       background: var(--panel);
@@ -94,21 +95,12 @@
       color: #0b1220;
       border: none;
     }
-    button:hover { transform: translateY(-1px); border-color: var(--accent); }
-    
-    .output {
-      min-height: 260px;
-      background: #0b1220;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      padding: 12px;
-      overflow: auto;
-      font-family: var(--mono);
-      font-size: 13px;
-      line-height: 1.5;
-      white-space: pre-wrap;
-      word-break: break-all;
+    button.action-copy {
+      background: #1e293b;
+      border-color: #38bdf8;
+      color: #38bdf8;
     }
+    button:hover { transform: translateY(-1px); border-color: var(--accent); }
     
     iframe.preview {
       width: 100%;
@@ -214,8 +206,6 @@
       user-select: none;
     }
     @media (max-width: 640px) {
-      .grid { grid-template-columns: 1fr; }
-      .output, iframe.preview { min-height: 200px; }
       .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
       .options-grid { grid-template-columns: 1fr; }
     }
@@ -227,7 +217,7 @@
       <h1>晴れる屋店舗検索 URL ジェネレーター</h1>
       <p class="lede">
         カード名（日本語・英語）を入力すると、晴れる屋オンライン検索の
-        URL を生成します。リンクをそのまま共有・埋め込みできます。
+        URL を生成します。
       </p>
     </header>
 
@@ -275,26 +265,17 @@
 
         <div class="buttons">
           <button class="primary" id="generateBtn">URLを作る</button>
-          <button id="sampleBtn">サンプル入力</button>
+          <button class="action-copy" id="copyResultBtn">URL一覧をコピー</button>
+          <button id="sampleBtn">サンプル</button>
           <button id="clearBtn">リセット</button>
-          <button id="copyBtn">URLをコピー</button>
         </div>
         <p class="muted">
-          - 晴れる屋オンラインの検索パラメータにカード名を付与したURLを生成します。<br>
-          - 選択した店舗ごとのURLが生成されます。<br>
           - 在庫、言語、foil のオプションを指定できます。<br>
-          - URLをそのまま共有したり、ボタンやリンクに設定できます。
+          - 「URLを作る」を押すとプレビューが更新され、「URL一覧をコピー」でクリップボードに保存できます。
         </p>
       </section>
 
-      <section class="card">
-        <h2 style="margin-top:0">生成されたURL</h2>
-        <div id="htmlOutput" class="output" aria-live="polite"></div>
-        <div class="buttons" style="margin-top:12px;">
-          <button id="copyResultBtn">URL一覧をコピー</button>
-        </div>
-      </section>
-    </div>
+      </div>
 
     <div class="card" style="margin-top:16px">
       <h2 style="margin-top:0">プレビュー</h2>
@@ -303,7 +284,7 @@
   </div>
 
   <script>
-    // 1. まず店舗リストを定義して、画面に表示する処理を最優先で実行します
+    // 1. 店舗リスト定義
     const stores = [
       "TC東京", "秋葉原", "渋谷", "吉祥寺", "千葉", "成田", "大宮", "川崎",
       "横浜", "町田", "札幌", "仙台", "郡山", "高崎", "宇都宮", "水戸",
@@ -331,19 +312,22 @@
         });
     }
 
-    // 2. その他の変数を定義
+    // 2. 変数定義
     const cardNameInput = document.getElementById("cardName");
-    const htmlOutput = document.getElementById("htmlOutput");
+    // htmlOutput は削除しました
     const preview = document.getElementById("preview");
     const generateBtn = document.getElementById("generateBtn");
     const sampleBtn = document.getElementById("sampleBtn");
     const clearBtn = document.getElementById("clearBtn");
-    const copyBtn = document.getElementById("copyBtn");
+    // copyBtn (カード名コピー) は削除・整理し、copyResultBtnをメインにしました
     const copyResultBtn = document.getElementById("copyResultBtn");
     const selectAllBtn = document.getElementById("selectAllBtn");
     const deselectAllBtn = document.getElementById("deselectAllBtn");
 
-    const STORAGE_KEY = "hareruyaSearchState_v4"; // バージョンアップしてキャッシュをクリア
+    // 生成されたURLテキストを保持する変数を追加
+    let generatedUrlText = "";
+
+    const STORAGE_KEY = "hareruyaSearchState_v5"; // バージョン変更
 
     const storeSlugs = {
       "秋葉原": "akihabara",
@@ -419,21 +403,23 @@
     const render = () => {
       const cardName = cardNameInput.value.trim();
       if (!cardName) {
-        htmlOutput.textContent = "カード名を入力してください。";
+        // カード名がない場合は変数もクリア
+        generatedUrlText = "";
         preview.srcdoc = "";
         return;
       }
       
       const selectedStores = getSelectedStores();
       if (selectedStores.length === 0) {
-        htmlOutput.textContent = "少なくとも1つの店舗を選択してください。";
+        generatedUrlText = "";
         preview.srcdoc = "";
         return;
       }
 
       const urls = selectedStores.map(store => ({ store, url: buildUrl(cardName, store) }));
-      const urlText = urls.map(item => `${item.url}`).join("\n");
-      htmlOutput.textContent = urlText;
+      
+      // 表示はしないが、コピー用に変数を更新
+      generatedUrlText = urls.map(item => `${item.url}`).join("\n");
 
       const previewHtml = `<!DOCTYPE html>
 <html lang="ja">
@@ -448,7 +434,7 @@
 </style>
 </head>
 <body>
-  <p style="margin:0 0 12px;font-weight:700;">生成されたURL (${urls.length}件):</p>
+  <p style="margin:0 0 12px;font-weight:700;">生成結果 (${urls.length}件):</p>
   ${urls.map(item => `
     <div class="item">
       <p class="store">${escapeHtml(item.store)}</p>
@@ -505,14 +491,15 @@
       document.getElementById("stockOption").value = "";
       document.getElementById("languageOption").value = "";
       document.getElementById("foilOption").checked = false;
-      htmlOutput.textContent = "";
+      
+      generatedUrlText = ""; // 変数クリア
       preview.srcdoc = "";
       clearState();
       cardNameInput.focus();
     });
 
-    const copyToClipboard = async (text, button, label = "コピーしました", reset = "URLをコピー") => {
-      if (!text.trim()) return;
+    const copyToClipboard = async (text, button, label = "コピー完了", reset) => {
+      if (!text || !text.trim()) return;
       try {
         await navigator.clipboard.writeText(text);
         if (button) {
@@ -523,12 +510,9 @@
       } catch (err) {}
     };
 
-    copyBtn.addEventListener("click", async () => {
-      await copyToClipboard(cardNameInput.value.trim(), copyBtn, "コピーしました", "カード名をコピー");
-    });
-
     copyResultBtn.addEventListener("click", async () => {
-      await copyToClipboard(htmlOutput.textContent, copyResultBtn, "コピーしました", "URL一覧をコピー");
+      // 画面からではなく、変数からコピー
+      await copyToClipboard(generatedUrlText, copyResultBtn, "コピーしました！", "URL一覧をコピー");
     });
 
     // 最後に復元処理
