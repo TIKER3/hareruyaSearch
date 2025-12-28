@@ -1,540 +1,227 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>晴れる屋店舗検索 | URLジェネレーター</title>
+  <title>MTG Tools Portal | タケ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    /* --- CSS Styles --- */
     :root {
-      color-scheme: light;
-      --bg: #0f172a;
-      --panel: rgba(15, 23, 42, 0.9);
-      --text: #e5e7eb;
-      --accent: #38bdf8;
-      --muted: #9ca3af;
-      --border: #1f2937;
-      --mono: "SFMono-Regular", Consolas, "Roboto Mono", monospace;
+      --bg-main: #0f172a; /* 深い紺色背景 */
+      --bg-card: #1e293b; /* カード背景 */
+      --bg-card-hover: #2d3f59; /* ホバー時のカード背景 */
+      --text-primary: #f1f5f9; /* 白文字 */
+      --text-secondary: #94a3b8; /* グレー文字 */
+      --accent-search: #38bdf8; /* 検索ツール用アクセントカラー（水色） */
+      --accent-diary: #f87171; /* ダイアリー用アクセントカラー（赤色） */
+      --border-color: #334155; /* 境界線 */
     }
-    * { box-sizing: border-box; }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: "Inter", "Noto Sans JP", system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 20% 20%, #1d2a4d, transparent 30%),
-                  radial-gradient(circle at 80% 10%, #0ea5e9, transparent 22%),
-                  radial-gradient(circle at 50% 80%, #0ea5e933, transparent 28%),
-                  #0b1120;
-      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-main);
+      /* 画面全体に微妙なグラデーションをかける */
+      background-image: radial-gradient(circle at top center, #1e293b, var(--bg-main));
+      color: var(--text-primary);
       min-height: 100vh;
-    }
-    .page {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 32px 20px 64px;
-    }
-    header h1 {
-      margin: 0 0 8px;
-      font-weight: 800;
-      letter-spacing: 0.01em;
-    }
-    .lede {
-      color: var(--muted);
-      margin: 0 0 16px;
-      line-height: 1.6;
-    }
-    .grid {
-      display: grid;
-      gap: 16px;
-      /* カラム設定をシンプルに（プレビューのみになったため） */
-      grid-template-columns: 1fr; 
-    }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(6px);
-    }
-    label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 8px;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #0b1220;
-      color: var(--text);
-      font-size: 15px;
-    }
-    input[type="text"]:focus {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
-    }
-    .buttons {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    button {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      background: #0b1220;
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
-    }
-    button.primary {
-      background: linear-gradient(120deg, #38bdf8, #22d3ee);
-      color: #0b1220;
-      border: none;
-    }
-    button.action-copy {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #38bdf8;
-    }
-    button:hover { transform: translateY(-1px); border-color: var(--accent); }
-    
-    iframe.preview {
-      width: 100%;
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-      min-height: 260px;
-      background: #0c1424;
-    }
-    .muted { color: var(--muted); font-size: 13px; line-height: 1.6; }
-    .store-selection {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .store-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 8px;
-      margin-top: 10px;
-      max-height: 300px;
-      overflow-y: auto;
-      padding: 8px;
-      background: #0b1220;
-      border-radius: 8px;
-    }
-    .store-item {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .store-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: var(--accent);
-    }
-    .store-item label {
-      cursor: pointer;
-      font-weight: 400;
-      margin: 0;
-      font-size: 14px;
-      user-select: none;
-    }
-    .store-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .store-buttons button {
-      font-size: 13px;
-      padding: 6px 10px;
-    }
-    .options-section {
-      margin-top: 16px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .options-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
-    }
-    .option-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
-    .option-group label {
-      font-size: 14px;
-      font-weight: 600;
+
+    .container {
+      max-width: 800px;
+      width: 100%;
+      text-align: center;
     }
-    select {
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: #0b1220;
-      color: var(--text);
-      font-size: 14px;
-      cursor: pointer;
+
+    header {
+      margin-bottom: 3rem;
     }
-    select:focus {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
+
+    header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
     }
-    .checkbox-option {
-      display: flex;
+
+    header p {
+      color: var(--text-secondary);
+      margin: 0 0 16px 0;
+    }
+
+    /* X (Twitter) リンクのスタイル */
+    .x-link {
+      display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-top: 4px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.2s ease;
     }
-    .checkbox-option input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      cursor: pointer;
-      accent-color: var(--accent);
+    
+    .x-link:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border-color: var(--text-secondary);
     }
-    .checkbox-option label {
-      cursor: pointer;
-      font-weight: 400;
+
+    .x-link svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* リンクカードのグリッドレイアウト */
+    .grid-links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      justify-content: center;
+    }
+
+    /* リンクカードのスタイル */
+    .link-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* ホバー時のエフェクト */
+    .link-card:hover {
+      background-color: var(--bg-card-hover);
+      transform: translateY(-5px); /* 少し浮き上がる */
+      box-shadow: 0 10px 20px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* アイコンエリア */
+    .icon-area {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .icon-area svg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .link-card h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.25rem;
+    }
+
+    .link-card p {
       margin: 0;
-      font-size: 14px;
-      user-select: none;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      line-height: 1.5;
     }
-    @media (max-width: 640px) {
-      .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
-      .options-grid { grid-template-columns: 1fr; }
+
+    /* 各カード固有の色設定 */
+    .card-search:hover {
+      border-color: var(--accent-search);
+    }
+    .card-search .icon-area svg {
+      stroke: var(--accent-search);
+      fill: none;
+    }
+
+    .card-diary:hover {
+      border-color: var(--accent-diary);
+    }
+    .card-diary .icon-area svg {
+      stroke: var(--accent-diary);
+      fill: none;
+    }
+
+    footer {
+      margin-top: 4rem;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
-  <div class="page">
+
+  <div class="container">
     <header>
-      <h1>晴れる屋店舗検索 URL ジェネレーター</h1>
-      <p class="lede">
-        カード名（日本語・英語）を入力すると、晴れる屋オンライン検索の
-        URL を生成します。
-      </p>
+      <h1>MTG Tools Portal</h1>
+      <p>タケ が作成した MTG 関連ツールのリンク集です。</p>
+      
+      <a href="https://x.com/take1991_mtg" target="_blank" rel="noopener" class="x-link">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
+        </svg>
+        @take1991_mtg
+      </a>
     </header>
 
-    <div class="grid">
-      <section class="card">
-        <label for="cardName">検索ワード（カード名）</label>
-        <input id="cardName" type="text" placeholder="例: 稲妻 / Lightning Bolt" autocomplete="off" />
-        
-        <div class="store-selection">
-          <label>店舗を選択</label>
-          <div class="store-buttons">
-            <button id="selectAllBtn">全て選択</button>
-            <button id="deselectAllBtn">全て解除</button>
-          </div>
-          <div class="store-grid" id="storeGrid"></div>
+    <main class="grid-links">
+      <a href="http://tiker1903.github.io/hareruyaSearch/" class="link-card card-search" target="_blank" rel="noopener">
+        <div class="icon-area">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <circle cx="10" cy="10" r="7" />
+            <line x1="21" y1="21" x2="15" y2="15" />
+            <rect x="14" y="12" width="8" height="10" rx="1" style="opacity: 0.7;"/>
+          </svg>
         </div>
+        <h2>晴れる屋店舗検索 URLジェネレーター</h2>
+        <p>カード名を入力して、晴れる屋各店舗の在庫検索用 URL を一括生成するツールです。</p>
+      </a>
 
-        <div class="options-section">
-          <label>検索オプション</label>
-          <div class="options-grid">
-            <div class="option-group">
-              <label for="stockOption">在庫</label>
-              <select id="stockOption">
-                <option value="">指定なし</option>
-                <option value="1">在庫あり</option>
-              </select>
-            </div>
-            <div class="option-group">
-              <label for="languageOption">言語</label>
-              <select id="languageOption">
-                <option value="">指定なし</option>
-                <option value="1">日本語</option>
-                <option value="2">英語</option>
-              </select>
-            </div>
-            <div class="option-group">
-              <label>foil</label>
-              <div class="checkbox-option">
-                <input type="checkbox" id="foilOption" />
-                <label for="foilOption">foil</label>
-              </div>
-            </div>
-          </div>
+      <a href="http://tiker1903.github.io/mtgBattleDiary/" class="link-card card-diary" target="_blank" rel="noopener">
+        <div class="icon-area">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M3 19a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
+            <path d="M3 6a9 9 0 0 1 9 0a9 9 0 0 1 9 0" />
+            <line x1="3" y1="6" x2="3" y2="19" />
+            <line x1="12" y1="6" x2="12" y2="19" />
+            <line x1="21" y1="6" x2="21" y2="19" />
+            <path d="M15 9l-6 6" />
+            <path d="M15 15l-6 -6" />
+          </svg>
         </div>
+        <h2>mtgBattleDiary</h2>
+        <p>MTG の対戦結果を記録・管理するための対戦日記ツールです。</p>
+      </a>
+    </main>
 
-        <div class="buttons">
-          <button class="primary" id="generateBtn">URLを作る</button>
-          <button class="action-copy" id="copyResultBtn">URL一覧をコピー</button>
-          <button id="sampleBtn">サンプル</button>
-          <button id="clearBtn">リセット</button>
-        </div>
-        <p class="muted">
-          - 在庫、言語、foil のオプションを指定できます。<br>
-          - 「URLを作る」を押すとプレビューが更新され、「URL一覧をコピー」でクリップボードに保存できます。
-        </p>
-      </section>
-
-      </div>
-
-    <div class="card" style="margin-top:16px">
-      <h2 style="margin-top:0">プレビュー</h2>
-      <iframe id="preview" class="preview" title="生成HTMLプレビュー"></iframe>
-    </div>
+    <footer>
+      © タケ
+    </footer>
   </div>
 
-  <script>
-    // 1. 店舗リスト定義
-    const stores = [
-      "TC東京", "秋葉原", "渋谷", "吉祥寺", "千葉", "成田", "大宮", "川崎",
-      "横浜", "町田", "札幌", "仙台", "郡山", "高崎", "宇都宮", "水戸",
-      "新潟", "金沢", "甲府", "静岡", "名古屋","大須", "TC大阪", "日本橋", "三宮",
-      "京都","広島", "高松", "福岡"
-    ];
-
-    const storeGrid = document.getElementById("storeGrid");
-    
-    // 店舗チェックボックスの生成ループ
-    if (storeGrid) {
-        stores.forEach(store => {
-          const item = document.createElement("div");
-          item.className = "store-item";
-          const checkbox = document.createElement("input");
-          checkbox.type = "checkbox";
-          checkbox.id = `store-${store}`;
-          checkbox.value = store;
-          const label = document.createElement("label");
-          label.htmlFor = `store-${store}`;
-          label.textContent = store;
-          item.appendChild(checkbox);
-          item.appendChild(label);
-          storeGrid.appendChild(item);
-        });
-    }
-
-    // 2. 変数定義
-    const cardNameInput = document.getElementById("cardName");
-    // htmlOutput は削除しました
-    const preview = document.getElementById("preview");
-    const generateBtn = document.getElementById("generateBtn");
-    const sampleBtn = document.getElementById("sampleBtn");
-    const clearBtn = document.getElementById("clearBtn");
-    // copyBtn (カード名コピー) は削除・整理し、copyResultBtnをメインにしました
-    const copyResultBtn = document.getElementById("copyResultBtn");
-    const selectAllBtn = document.getElementById("selectAllBtn");
-    const deselectAllBtn = document.getElementById("deselectAllBtn");
-
-    // 生成されたURLテキストを保持する変数を追加
-    let generatedUrlText = "";
-
-    const STORAGE_KEY = "hareruyaSearchState_v5"; // バージョン変更
-
-    const storeSlugs = {
-      "秋葉原": "akihabara",
-      "渋谷": "shibuya",
-      "吉祥寺": "kichijoji",
-      "千葉": "chiba",
-      "成田": "narita",
-      "大宮": "omiya",
-      "川崎": "kawasaki",
-      "横浜": "yokohama",
-      "町田": "machida",
-      "札幌": "sapporo",
-      "仙台": "koriyama",
-      "郡山": "koriyama",
-      "高崎": "takasaki",
-      "宇都宮": "utsunomiya",
-      "水戸": "mito",
-      "新潟": "niigata",
-      "金沢": "kanazawa",
-      "甲府": "kofu",
-      "静岡": "shizuoka",
-      "名古屋": "nagoya",
-      "大須": "osu",      
-      "TC大阪": "osaka",
-      "日本橋": "nipponbashi",
-      "三宮": "sannomiya",
-      "京都": "kyoto",
-      "広島": "hiroshima",
-      "高松": "takamatsu",
-      "福岡": "fukuoka"
-    };
-
-    const saveState = (value) => {
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(value)); } catch (e) {}
-    };
-
-    const loadState = () => {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch (e) { return null; }
-    };
-
-    const clearState = () => { localStorage.removeItem(STORAGE_KEY); };
-
-    const escapeHtml = (text) =>
-      text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
-
-    const buildUrl = (cardName, store = null) => {
-      const query = encodeURIComponent(cardName);
-      const params = [`product=${query}`];
-      
-      const stockOption = document.getElementById("stockOption").value;
-      if (stockOption !== "") params.push(`stock=${stockOption}`);
-      
-      const languageOption = document.getElementById("languageOption").value;
-      if (languageOption !== "") params.push(`language%5B%5D=${languageOption}`);
-      
-      const foilOption = document.getElementById("foilOption").checked;
-      if (foilOption) params.push(`foilFlg%5B%5D=1`);
-      
-      const queryString = params.join("&");
-      
-      if (!store || store === "TC東京") return `https://www.hareruyamtg.com/ja/products/search?${queryString}`;
-      const slug = storeSlugs[store];
-      return slug ? `https://shops.hareruyamtg.com/${slug}/products/search/result/?${queryString}` : `https://www.hareruyamtg.com/ja/products/search?${queryString}`;
-    };
-
-    const getSelectedStores = () => {
-      return stores.filter(store => {
-         const el = document.getElementById(`store-${store}`);
-         return el && el.checked;
-      });
-    };
-
-    const render = () => {
-      const cardName = cardNameInput.value.trim();
-      if (!cardName) {
-        // カード名がない場合は変数もクリア
-        generatedUrlText = "";
-        preview.srcdoc = "";
-        return;
-      }
-      
-      const selectedStores = getSelectedStores();
-      if (selectedStores.length === 0) {
-        generatedUrlText = "";
-        preview.srcdoc = "";
-        return;
-      }
-
-      const urls = selectedStores.map(store => ({ store, url: buildUrl(cardName, store) }));
-      
-      // 表示はしないが、コピー用に変数を更新
-      generatedUrlText = urls.map(item => `${item.url}`).join("\n");
-
-      const previewHtml = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-  body { margin: 0; background: #0b1120; color: #e5e7eb; font-family: sans-serif; padding: 16px; }
-  a { color: #38bdf8; word-break: break-all; text-decoration: none; }
-  .item { margin-bottom: 16px; padding: 12px; background: #111827; border-radius: 8px; border: 1px solid #1f2937; }
-  .store { margin: 0 0 6px; font-weight: 600; color: #38bdf8; }
-</style>
-</head>
-<body>
-  <p style="margin:0 0 12px;font-weight:700;">生成結果 (${urls.length}件):</p>
-  ${urls.map(item => `
-    <div class="item">
-      <p class="store">${escapeHtml(item.store)}</p>
-      <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a>
-    </div>
-  `).join("")}
-</body>
-</html>`;
-      preview.srcdoc = previewHtml;
-
-      const state = {
-        cardName,
-        stores: selectedStores,
-        stock: document.getElementById("stockOption").value,
-        language: document.getElementById("languageOption").value,
-        foil: document.getElementById("foilOption").checked
-      };
-      saveState(state);
-    };
-
-    selectAllBtn.addEventListener("click", () => {
-      stores.forEach(store => {
-        const el = document.getElementById(`store-${store}`);
-        if(el) el.checked = true;
-      });
-    });
-
-    deselectAllBtn.addEventListener("click", () => {
-      stores.forEach(store => {
-        const el = document.getElementById(`store-${store}`);
-        if(el) el.checked = false;
-      });
-    });
-
-    generateBtn.addEventListener("click", render);
-    cardNameInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        render();
-      }
-    });
-
-    sampleBtn.addEventListener("click", () => {
-      cardNameInput.value = "オーリオックのチャンピオン / Auriok Champion";
-      render();
-    });
-
-    clearBtn.addEventListener("click", () => {
-      cardNameInput.value = "";
-      stores.forEach(store => {
-        const el = document.getElementById(`store-${store}`);
-        if(el) el.checked = false;
-      });
-      document.getElementById("stockOption").value = "";
-      document.getElementById("languageOption").value = "";
-      document.getElementById("foilOption").checked = false;
-      
-      generatedUrlText = ""; // 変数クリア
-      preview.srcdoc = "";
-      clearState();
-      cardNameInput.focus();
-    });
-
-    const copyToClipboard = async (text, button, label = "コピー完了", reset) => {
-      if (!text || !text.trim()) return;
-      try {
-        await navigator.clipboard.writeText(text);
-        if (button) {
-          const original = button.textContent;
-          button.textContent = label;
-          setTimeout(() => (button.textContent = reset || original), 1200);
-        }
-      } catch (err) {}
-    };
-
-    copyResultBtn.addEventListener("click", async () => {
-      // 画面からではなく、変数からコピー
-      await copyToClipboard(generatedUrlText, copyResultBtn, "コピーしました！", "URL一覧をコピー");
-    });
-
-    // 最後に復元処理
-    const restoreFromStorage = () => {
-      const state = loadState();
-      if (!state) return false;
-      if (state.cardName) cardNameInput.value = state.cardName;
-      if (Array.isArray(state.stores)) {
-        state.stores.forEach((s) => {
-          const cb = document.getElementById(`store-${s}`);
-          if (cb) cb.checked = true;
-        });
-      }
-      if (state.stock) document.getElementById("stockOption").value = state.stock;
-      if (state.language) document.getElementById("languageOption").value = state.language;
-      if (state.foil) document.getElementById("foilOption").checked = state.foil;
-      return true;
-    };
-
-    if (restoreFromStorage()) {
-      render();
-    }
-  </script>
 </body>
 </html>
