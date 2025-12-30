@@ -7,162 +7,281 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #0f172a;
-      --panel: rgba(15, 23, 42, 0.9);
-      --text: #e5e7eb;
-      --accent: #38bdf8;
-      --muted: #9ca3af;
-      --border: #1f2937;
-      --mono: "SFMono-Regular", Consolas, "Roboto Mono", monospace;
+      --bg: #f8fafc;
+      --panel: #ffffff;
+      --text-main: #334155;
+      --text-sub: #64748b;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --border: #e2e8f0;
+      --input-bg: #ffffff;
+      --focus-ring: rgba(14, 165, 233, 0.25);
+      
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
+    
     * { box-sizing: border-box; }
+    
     body {
       margin: 0;
-      font-family: "Inter", "Noto Sans JP", system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 20% 20%, #1d2a4d, transparent 30%),
-                  radial-gradient(circle at 80% 10%, #0ea5e9, transparent 22%),
-                  radial-gradient(circle at 50% 80%, #0ea5e933, transparent 28%),
-                  #0b1120;
-      color: var(--text);
+      font-family: "Inter", "Noto Sans JP", sans-serif;
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.05) 0%, transparent 20%);
+      color: var(--text-main);
       min-height: 100vh;
+      line-height: 1.5;
     }
+
     .page {
-      max-width: 1100px;
+      max-width: 1000px;
       margin: 0 auto;
-      padding: 32px 20px 64px;
+      padding: 40px 20px 80px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
     }
     header h1 {
-      margin: 0 0 8px;
+      margin: 0 0 12px;
       font-weight: 800;
-      letter-spacing: 0.01em;
+      color: #0f172a;
+      letter-spacing: -0.025em;
+      font-size: 1.75rem;
     }
     .lede {
-      color: var(--muted);
-      margin: 0 0 16px;
-      line-height: 1.6;
+      color: var(--text-sub);
+      margin: 0;
+      font-size: 0.95rem;
     }
+
     .grid {
       display: grid;
-      gap: 16px;
-      /* カラム設定をシンプルに（プレビューのみになったため） */
+      gap: 24px;
       grid-template-columns: 1fr; 
     }
+
     .card {
       background: var(--panel);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 18px;
-      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.35);
-      backdrop-filter: blur(6px);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      transition: box-shadow 0.2s ease;
     }
+
     label {
       display: block;
       font-weight: 700;
       margin-bottom: 8px;
+      color: #1e293b;
+      font-size: 0.95rem;
     }
+
     input[type="text"] {
       width: 100%;
-      padding: 12px;
-      border-radius: 12px;
+      padding: 12px 16px;
+      border-radius: 10px;
       border: 1px solid var(--border);
-      background: #0b1220;
-      color: var(--text);
-      font-size: 15px;
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 16px;
+      transition: all 0.2s;
+      box-shadow: var(--shadow-sm);
     }
     input[type="text"]:focus {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--focus-ring);
     }
+
     .buttons {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    button {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 14px;
-      background: #0b1220;
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 700;
-      letter-spacing: 0.01em;
-      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
-    }
-    button.primary {
-      background: linear-gradient(120deg, #38bdf8, #22d3ee);
-      color: #0b1220;
-      border: none;
-    }
-    button.action-copy {
-      background: #1e293b;
-      border-color: #38bdf8;
-      color: #38bdf8;
-    }
-    button:hover { transform: translateY(-1px); border-color: var(--accent); }
-    
-    iframe.preview {
-      width: 100%;
-      border: 1px dashed var(--border);
-      border-radius: 12px;
-      min-height: 260px;
-      background: #0c1424;
-    }
-    .muted { color: var(--muted); font-size: 13px; line-height: 1.6; }
-    .store-selection {
-      margin-top: 16px;
-      padding-top: 16px;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 24px;
       border-top: 1px solid var(--border);
     }
+
+    button {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      background: #ffffff;
+      color: var(--text-main);
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-width: 80px; /* ボタンの幅が変動しすぎないように */
+    }
+    button:hover {
+      background-color: #f1f5f9;
+      transform: translateY(-1px);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #ffffff;
+      border: 1px solid transparent;
+      box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.3);
+    }
+    button.primary:hover {
+      background: var(--accent-hover);
+    }
+
+    button.action-copy {
+      color: var(--accent);
+      border-color: #bae6fd;
+      background: #f0f9ff;
+    }
+    button.action-copy:hover {
+      background: #e0f2fe;
+    }
+    
+    /* 位置情報ボタン用のスタイル */
+    button.location-btn {
+      color: #059669;
+      border-color: #a7f3d0;
+      background: #ecfdf5;
+      min-width: 140px; /* テキストが変わってもレイアウト崩れを防ぐ */
+    }
+    button.location-btn:hover {
+      background: #d1fae5;
+    }
+    /* 成功時のスタイル */
+    button.location-btn.success {
+      background: #22c55e;
+      color: white;
+      border-color: #22c55e;
+    }
+
+    #radiusSelect {
+      height: 32px;
+      padding: 0 4px 0 8px;
+      border: 1px solid #a7f3d0;
+      background: #ecfdf5;
+      color: #059669;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 4px;
+    }
+    #radiusSelect:focus {
+      outline: 2px solid #059669;
+      outline-offset: 1px;
+    }
+
+    iframe.preview {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-height: 300px;
+      background: #f1f5f9;
+    }
+
+    .muted {
+      color: var(--text-sub);
+      font-size: 0.85rem;
+      margin-top: 16px;
+      line-height: 1.6;
+    }
+
+    /* 店舗選択エリア */
+    .store-selection {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+    }
+    .store-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .store-header label { margin: 0; }
+    
+    .store-buttons {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .store-buttons button {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      height: 32px;
+    }
+
     .store-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
       gap: 8px;
-      margin-top: 10px;
-      max-height: 300px;
+      max-height: 280px;
       overflow-y: auto;
-      padding: 8px;
-      background: #0b1220;
-      border-radius: 8px;
+      padding: 12px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
     }
+    
     .store-item {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      padding: 4px;
+      border-radius: 6px;
+      transition: background 0.15s;
+    }
+    .store-item:hover {
+      background: #e2e8f0;
     }
     .store-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
       accent-color: var(--accent);
+      border-color: #cbd5e1;
     }
     .store-item label {
       cursor: pointer;
-      font-weight: 400;
+      font-weight: 500;
       margin: 0;
-      font-size: 14px;
+      font-size: 0.85rem;
+      color: var(--text-main);
       user-select: none;
+      flex: 1;
     }
-    .store-buttons {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .store-buttons button {
-      font-size: 13px;
-      padding: 6px 10px;
-    }
+
+    /* オプションエリア */
     .options-section {
-      margin-top: 16px;
-      padding-top: 16px;
+      margin-top: 20px;
+      padding-top: 20px;
       border-top: 1px solid var(--border);
     }
     .options-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-top: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
     }
     .option-group {
       display: flex;
@@ -170,44 +289,49 @@
       gap: 6px;
     }
     .option-group label {
-      font-size: 14px;
+      font-size: 0.85rem;
       font-weight: 600;
+      color: var(--text-sub);
     }
-    select {
-      padding: 8px 10px;
+    .option-group select {
+      padding: 10px;
       border-radius: 8px;
       border: 1px solid var(--border);
-      background: #0b1220;
-      color: var(--text);
-      font-size: 14px;
+      background: #fff;
+      color: var(--text-main);
+      font-size: 0.9rem;
       cursor: pointer;
-    }
-    select:focus {
-      outline: 2px solid var(--accent);
-      outline-offset: 1px;
+      transition: all 0.2s;
     }
     .checkbox-option {
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-top: 4px;
+      height: 42px;
     }
     .checkbox-option input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       cursor: pointer;
       accent-color: var(--accent);
     }
     .checkbox-option label {
       cursor: pointer;
-      font-weight: 400;
+      font-weight: 600;
       margin: 0;
-      font-size: 14px;
-      user-select: none;
+      font-size: 0.9rem;
+      color: var(--text-main);
     }
+
     @media (max-width: 640px) {
-      .store-grid { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .page { padding: 20px 16px; }
+      header h1 { font-size: 1.4rem; }
+      .store-grid { grid-template-columns: repeat(2, 1fr); }
       .options-grid { grid-template-columns: 1fr; }
+      .buttons { flex-direction: column; }
+      .buttons button { width: 100%; }
+      .store-header { align-items: flex-start; flex-direction: column; }
+      .store-buttons { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -216,8 +340,7 @@
     <header>
       <h1>晴れる屋店舗検索 URL ジェネレーター</h1>
       <p class="lede">
-        カード名（日本語・英語）を入力すると、晴れる屋オンライン検索の
-        URL を生成します。
+        カード名を入力すると、晴れる屋各店舗の検索URLを一括生成します。
       </p>
     </header>
 
@@ -227,19 +350,34 @@
         <input id="cardName" type="text" placeholder="例: 稲妻 / Lightning Bolt" autocomplete="off" />
         
         <div class="store-selection">
-          <label>店舗を選択</label>
-          <div class="store-buttons">
-            <button id="selectAllBtn">全て選択</button>
-            <button id="deselectAllBtn">全て解除</button>
+          <div class="store-header">
+            <label>対象店舗</label>
+            <div class="store-buttons">
+              <div style="display:flex; align-items:center;">
+                <select id="radiusSelect">
+                  <option value="1">1km以内</option>
+                  <option value="3">3km以内</option>
+                  <option value="5" selected>5km以内</option>
+                  <option value="7">7km以内</option>
+                  <option value="10">10km以内</option>
+                  <option value="20">20km以内</option>
+                </select>
+                <button id="locationBtn" class="location-btn">
+                  <span id="locIcon">📍</span> <span id="locText">現在地から</span>
+                </button>
+              </div>
+              
+              <button id="selectAllBtn" style="margin-left:4px;">全て</button>
+              <button id="deselectAllBtn">解除</button>
+            </div>
           </div>
           <div class="store-grid" id="storeGrid"></div>
         </div>
 
         <div class="options-section">
-          <label>検索オプション</label>
           <div class="options-grid">
             <div class="option-group">
-              <label for="stockOption">在庫</label>
+              <label for="stockOption">在庫状況</label>
               <select id="stockOption">
                 <option value="">指定なし</option>
                 <option value="1">在庫あり</option>
@@ -254,32 +392,31 @@
               </select>
             </div>
             <div class="option-group">
-              <label>foil</label>
+              <label>その他の条件</label>
               <div class="checkbox-option">
                 <input type="checkbox" id="foilOption" />
-                <label for="foilOption">foil</label>
+                <label for="foilOption">Foilのみ</label>
               </div>
             </div>
           </div>
         </div>
 
         <div class="buttons">
-          <button class="primary" id="generateBtn">URLを作る</button>
+          <button class="primary" id="generateBtn">URLを作成</button>
           <button class="action-copy" id="copyResultBtn">URL一覧をコピー</button>
-          <button id="sampleBtn">サンプル</button>
+          <button id="sampleBtn">サンプル入力</button>
           <button id="clearBtn">リセット</button>
         </div>
         <p class="muted">
-          - 在庫、言語、foil のオプションを指定できます。<br>
-          - 「URLを作る」を押すとプレビューが更新され、「URL一覧をコピー」でクリップボードに保存できます。
+          ※「現在地から」を使用するにはブラウザの位置情報許可が必要です。<br>
+          ※「URLを作成」を押すと下にプレビューが表示されます。
         </p>
       </section>
 
+      <div class="card">
+        <h2 style="margin:0 0 16px; font-size:1.1rem; color:#0f172a;">プレビュー</h2>
+        <iframe id="preview" class="preview" title="生成HTMLプレビュー"></iframe>
       </div>
-
-    <div class="card" style="margin-top:16px">
-      <h2 style="margin-top:0">プレビュー</h2>
-      <iframe id="preview" class="preview" title="生成HTMLプレビュー"></iframe>
     </div>
   </div>
 
@@ -291,6 +428,39 @@
       "新潟", "金沢", "甲府", "静岡", "名古屋","大須", "TC大阪", "日本橋", "三宮",
       "京都","広島", "高松", "福岡"
     ];
+
+    // 店舗の座標データ
+    const storeLocations = {
+      "TC東京": { lat: 35.7145, lng: 139.7046 }, // 高田馬場
+      "秋葉原": { lat: 35.7022, lng: 139.7741 },
+      "渋谷": { lat: 35.6580, lng: 139.7016 },
+      "吉祥寺": { lat: 35.7022, lng: 139.5794 },
+      "千葉": { lat: 35.6131, lng: 140.1132 },
+      "成田": { lat: 35.7766, lng: 140.3187 },
+      "大宮": { lat: 35.9063, lng: 139.6240 },
+      "川崎": { lat: 35.5304, lng: 139.7005 },
+      "横浜": { lat: 35.4657, lng: 139.6223 },
+      "町田": { lat: 35.5407, lng: 139.4442 },
+      "札幌": { lat: 43.0618, lng: 141.3545 },
+      "仙台": { lat: 38.2601, lng: 140.8824 },
+      "郡山": { lat: 37.3996, lng: 140.3888 },
+      "高崎": { lat: 36.3223, lng: 139.0125 },
+      "宇都宮": { lat: 36.5551, lng: 139.8828 },
+      "水戸": { lat: 36.3703, lng: 140.4578 },
+      "新潟": { lat: 37.9138, lng: 139.0624 },
+      "金沢": { lat: 36.5780, lng: 136.6482 },
+      "甲府": { lat: 35.6621, lng: 138.5683 },
+      "静岡": { lat: 34.9756, lng: 138.3828 },
+      "名古屋": { lat: 35.1709, lng: 136.8815 },
+      "大須": { lat: 35.1595, lng: 136.9056 },
+      "TC大阪": { lat: 34.7035, lng: 135.4965 }, 
+      "日本橋": { lat: 34.6596, lng: 135.5065 },
+      "三宮": { lat: 34.6946, lng: 135.1956 },
+      "京都": { lat: 35.0037, lng: 135.7686 },
+      "広島": { lat: 34.3963, lng: 132.4594 },
+      "高松": { lat: 34.3398, lng: 134.0470 },
+      "福岡": { lat: 33.5902, lng: 130.3989 } 
+    };
 
     const storeGrid = document.getElementById("storeGrid");
     
@@ -312,22 +482,20 @@
         });
     }
 
-    // 2. 変数定義
+    // 変数定義
     const cardNameInput = document.getElementById("cardName");
-    // htmlOutput は削除しました
     const preview = document.getElementById("preview");
     const generateBtn = document.getElementById("generateBtn");
     const sampleBtn = document.getElementById("sampleBtn");
     const clearBtn = document.getElementById("clearBtn");
-    // copyBtn (カード名コピー) は削除・整理し、copyResultBtnをメインにしました
     const copyResultBtn = document.getElementById("copyResultBtn");
     const selectAllBtn = document.getElementById("selectAllBtn");
     const deselectAllBtn = document.getElementById("deselectAllBtn");
+    const locationBtn = document.getElementById("locationBtn");
+    const radiusSelect = document.getElementById("radiusSelect");
 
-    // 生成されたURLテキストを保持する変数を追加
     let generatedUrlText = "";
-
-    const STORAGE_KEY = "hareruyaSearchState_v5"; // バージョン変更
+    const STORAGE_KEY = "hareruyaSearchState_v5";
 
     const storeSlugs = {
       "秋葉原": "akihabara",
@@ -403,7 +571,6 @@
     const render = () => {
       const cardName = cardNameInput.value.trim();
       if (!cardName) {
-        // カード名がない場合は変数もクリア
         generatedUrlText = "";
         preview.srcdoc = "";
         return;
@@ -417,8 +584,6 @@
       }
 
       const urls = selectedStores.map(store => ({ store, url: buildUrl(cardName, store) }));
-      
-      // 表示はしないが、コピー用に変数を更新
       generatedUrlText = urls.map(item => `${item.url}`).join("\n");
 
       const previewHtml = `<!DOCTYPE html>
@@ -427,17 +592,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { margin: 0; background: #0b1120; color: #e5e7eb; font-family: sans-serif; padding: 16px; }
-  a { color: #38bdf8; word-break: break-all; text-decoration: none; }
-  .item { margin-bottom: 16px; padding: 12px; background: #111827; border-radius: 8px; border: 1px solid #1f2937; }
-  .store { margin: 0 0 6px; font-weight: 600; color: #38bdf8; }
+  body { 
+    margin: 0; 
+    background: #f8fafc; 
+    color: #334155; 
+    font-family: "Inter", sans-serif; 
+    padding: 16px; 
+  }
+  a { 
+    color: #0ea5e9; 
+    word-break: break-all; 
+    text-decoration: none; 
+    font-size: 0.9rem;
+  }
+  a:hover { text-decoration: underline; }
+  .item { 
+    margin-bottom: 12px; 
+    padding: 12px; 
+    background: #ffffff; 
+    border-radius: 8px; 
+    border: 1px solid #e2e8f0; 
+    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  }
+  .store { 
+    margin: 0 0 4px; 
+    font-weight: 700; 
+    color: #0f172a; 
+    font-size: 0.85rem;
+  }
+  .count { font-size: 0.85rem; font-weight: bold; margin-bottom: 12px; color: #64748b; }
 </style>
 </head>
 <body>
-  <p style="margin:0 0 12px;font-weight:700;">生成結果 (${urls.length}件):</p>
+  <div class="count">生成結果: ${urls.length}件</div>
   ${urls.map(item => `
     <div class="item">
-      <p class="store">${escapeHtml(item.store)}</p>
+      <div class="store">${escapeHtml(item.store)}</div>
       <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a>
     </div>
   `).join("")}
@@ -454,6 +644,122 @@
       };
       saveState(state);
     };
+
+    // ----------------------------------------------------
+    // 位置情報機能のロジック (修正版)
+    // ----------------------------------------------------
+    const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
+      const R = 6371; 
+      const dLat = (lat2 - lat1) * (Math.PI / 180);
+      const dLon = (lon2 - lon1) * (Math.PI / 180);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c; 
+    };
+
+    locationBtn.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        alert("お使いのブラウザは位置情報をサポートしていません。");
+        return;
+      }
+
+      // 要素の取得と安全性チェック
+      const icon = document.getElementById("locIcon");
+      const text = document.getElementById("locText");
+      
+      // ボタンが既に処理中(要素が見つからないなど)の場合はガード
+      if (!icon || !text) {
+        // 万が一HTMLが壊れていた場合の復旧
+        locationBtn.innerHTML = '<span id="locIcon">📍</span> <span id="locText">現在地から</span>';
+        return;
+      }
+
+      // UIをロード中に変更
+      locationBtn.disabled = true;
+      icon.textContent = "⏳";
+      text.textContent = "検索中...";
+      
+      // 成功時の処理などによるスタイル変更をリセット
+      locationBtn.classList.remove("success");
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const userLat = position.coords.latitude;
+          const userLng = position.coords.longitude;
+          const radiusVal = document.getElementById("radiusSelect").value;
+          const RADIUS_KM = parseFloat(radiusVal);
+          
+          let foundCount = 0;
+
+          // 1. 全解除
+          stores.forEach(store => {
+            const el = document.getElementById(`store-${store}`);
+            if(el) el.checked = false;
+          });
+
+          // 2. 距離判定とチェック
+          stores.forEach(store => {
+            const loc = storeLocations[store];
+            if (loc) {
+              const distance = getDistanceFromLatLonInKm(userLat, userLng, loc.lat, loc.lng);
+              if (distance <= RADIUS_KM) {
+                const el = document.getElementById(`store-${store}`);
+                if (el) {
+                  el.checked = true;
+                  foundCount++;
+                }
+              }
+            }
+          });
+
+          // 3. ボタン状態の復帰
+          locationBtn.disabled = false;
+          locationBtn.classList.add("success");
+          icon.textContent = "✅";
+          
+          if (foundCount > 0) {
+             text.textContent = `${foundCount}店舗選択`;
+          } else {
+             text.textContent = "なし";
+             alert(`現在地から${RADIUS_KM}km以内に店舗が見つかりませんでした。`);
+          }
+
+          // 1.5秒後に元のテキストに戻す
+          setTimeout(() => {
+            // 要素がまだ存在するか確認（連打などで消えている可能性への対策）
+            const i = document.getElementById("locIcon");
+            const t = document.getElementById("locText");
+            if (i && t) {
+              i.textContent = "📍";
+              t.textContent = "現在地から";
+              locationBtn.classList.remove("success");
+            }
+          }, 1500);
+        },
+        (error) => {
+          console.error(error);
+          locationBtn.disabled = false;
+          const i = document.getElementById("locIcon");
+          const t = document.getElementById("locText");
+          if (i && t) {
+            i.textContent = "📍";
+            t.textContent = "現在地から";
+          }
+          alert("位置情報の取得に失敗しました。");
+        },
+        // 位置情報オプション: キャッシュを使用せず、最新の情報を取得する
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 0 
+        }
+      );
+    });
+
+    // ----------------------------------------------------
 
     selectAllBtn.addEventListener("click", () => {
       stores.forEach(store => {
@@ -478,7 +784,7 @@
     });
 
     sampleBtn.addEventListener("click", () => {
-      cardNameInput.value = "オーリオックのチャンピオン / Auriok Champion";
+      cardNameInput.value = "思考囲い / Thoughtseize";
       render();
     });
 
@@ -492,30 +798,39 @@
       document.getElementById("languageOption").value = "";
       document.getElementById("foilOption").checked = false;
       
-      generatedUrlText = ""; // 変数クリア
+      generatedUrlText = "";
       preview.srcdoc = "";
       clearState();
       cardNameInput.focus();
     });
 
-    const copyToClipboard = async (text, button, label = "コピー完了", reset) => {
+    // 通常のコピー用関数（ボタンのHTML構造を壊さないように修正）
+    const copyToClipboard = async (text, button, label = "コピー完了") => {
       if (!text || !text.trim()) return;
-      try {
-        await navigator.clipboard.writeText(text);
-        if (button) {
-          const original = button.textContent;
-          button.textContent = label;
-          setTimeout(() => (button.textContent = reset || original), 1200);
-        }
-      } catch (err) {}
+      
+      try { await navigator.clipboard.writeText(text); } catch (err) {}
+
+      if (button) {
+        const originalText = button.textContent;
+        // 元のテキストを保持しつつ、一時的に変更
+        button.textContent = label;
+        button.style.background = "#22c55e"; 
+        button.style.color = "#fff";
+        button.style.borderColor = "#22c55e";
+        
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = "";
+          button.style.color = "";
+          button.style.borderColor = "";
+        }, 1200);
+      }
     };
 
     copyResultBtn.addEventListener("click", async () => {
-      // 画面からではなく、変数からコピー
-      await copyToClipboard(generatedUrlText, copyResultBtn, "コピーしました！", "URL一覧をコピー");
+      await copyToClipboard(generatedUrlText, copyResultBtn, "コピーしました！");
     });
 
-    // 最後に復元処理
     const restoreFromStorage = () => {
       const state = loadState();
       if (!state) return false;
